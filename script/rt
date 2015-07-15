@@ -1797,18 +1797,18 @@ sub prettylist {
     use List::Util qw[max];
     my ($wchar, $hchar, $wpixels, $hpixels) = GetTerminalSize();
 
-    my $maxqlen = 0;
-    foreach my $form (@$forms) {
-        my ($c, $o, $k, $e) = @$form;
-        next if ! $k->{id};
+    my $maxqlen = 10;
+    #foreach my $form (@$forms) {
+    #    my ($c, $o, $k, $e) = @$form;
+    #    next if ! $k->{id};
 
-	$maxqlen = max($maxqlen, length($k->{Queue}));
-    }
+    #    $maxqlen = max($maxqlen, length($k->{Queue}));
+    #}
 
     my $heading = "Ticket Owner Queue" . (' 'x($maxqlen-4)) . " Age   Told Status Requestor Subject\n";
     $heading .= '-' x $wchar . "\n";
     my (@open, @me);
-    my $subjlen = max(30, 75+$maxqlen);
+    my $subjlen = $wchar - (76+$maxqlen);
 
     foreach my $form (@$forms) {
         my ($c, $o, $k, $e) = @$form;
@@ -1819,7 +1819,7 @@ sub prettylist {
         $id =~ s!^ticket/!!;
         my $owner = $k->{Owner} eq 'Nobody' ? '' : $k->{Owner};
         $owner = substr($owner, 0, 5);
-        my $queue = $k->{Queue};
+        my $queue = substr($k->{Queue}, -$maxqlen);
         my $subject = substr($k->{Subject}, 0, $subjlen);
         my $age = date_diff($k->{Created});
         my $told = $k->{Told} eq 'Not set' ? '' : date_diff($k->{Told});
